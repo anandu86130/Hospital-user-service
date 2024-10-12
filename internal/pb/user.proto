@@ -1,0 +1,61 @@
+syntax="proto3";
+
+package user;
+
+option go_package="./";
+
+service user{
+    rpc Signup(SignupRequest) returns(SignupResponse);
+    rpc VerifyOTP(VerifyOTPRequest)returns(VerifyOTPResponse);
+    rpc Login(LoginRequest)returns(LoginResponse);
+    rpc IndUserDetails(idreq)returns(UserDetails);
+    rpc UpdateUserDetails(UserDetails)returns(UserDetails);
+}
+
+message SignupRequest{
+    string name = 1;
+    string email = 2;
+    string gender = 3;
+    string age = 4;
+    string number = 5;
+    string password = 7;
+    string address = 8;
+}
+
+message SignupResponse{
+    string message = 1;
+}
+
+message VerifyOTPRequest{
+    string email = 1;
+    string otp = 2;
+}
+
+message VerifyOTPResponse{
+    string message = 1;
+    string token = 2;
+}
+
+message LoginRequest{
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse{
+    string email = 1;
+    string token = 2;
+}
+
+message idreq{
+    string id = 1;
+}
+
+message UserDetails{
+    uint32 id = 1;
+    string name = 2;
+    string gender = 3;
+    string age = 4;
+    string number = 5;
+    string password = 6;
+    string address = 7; 
+}
