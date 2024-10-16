@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/anandu86130/Hospital-user-service/internal/model"
+	pb "github.com/anandu86130/Hospital-user-service/internal/pb"
 	userrepo "github.com/anandu86130/Hospital-user-service/internal/repositories/interface"
 	"gorm.io/gorm"
 )
@@ -90,4 +91,36 @@ func (r *UserRepo) UserExists(email string) (bool, error) {
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (r *UserRepo) IndUserDetails(user_id uint32) (*pb.UserDetails, error) {
+	var user *pb.UserDetails
+	res := r.DB.Table("usermodels").Where("id=?", user_id).First(&user)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user with this id does not exists")
+		}
+		return nil, res.Error
+	}
+	return user, nil
+}
+
+func (r *UserRepo) ListUsers() ([]model.UserModel, error){
+	row, err := r.DB.Raw("select id,name,email,gender,age,number,address from users").Rows()
+	if err != nil {
+		return []model.UserModel{}, err
+	}
+	defer row.Close()
+	var userdetails []model.UserModel
+	for row.Next() {
+		var userdetail model.UserModel
+
+		// Scan the row into variables
+		if err := row.Scan(&userdetail.ID, &userdetail.Name, &userdetail.Age, &userdetail.Email, &userdetail.Gender, &userdetail.Number, &userdetail.Address); err != nil {
+			return nil, err
+		}
+
+		userdetails = append(userdetails, userdetail)
+	}
+	return userdetails, nil
 }

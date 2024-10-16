@@ -22,6 +22,11 @@ type UserUseCase struct {
 	redisClient    *config.RedisService
 }
 
+// UpdateUser implements interfaces.UserUseCase.
+func (u *UserUseCase) UpdateUser(user model.UserModel) (pb.UserDetails, error) {
+	panic("unimplemented")
+}
+
 func NewUserUSeCase(repository interfaces.UserRepository, resisClient *config.RedisService) usecaseint.UserUseCase {
 	return &UserUseCase{
 		UserRepository: repository,
@@ -184,4 +189,43 @@ func (u *UserUseCase) VerifyOTP(userpb *pb.VerifyOTPRequest) (*pb.VerifyOTPRespo
 
 	log.Printf("User successfully created and token generated for email: %s", userpb.Email)
 	return &pb.VerifyOTPResponse{Token: token}, nil
+}
+
+func (u *UserUseCase) IndUserDetails(user_id uint32) (*pb.UserDetails, error) {
+	user, err := u.UserRepository.IndUserDetails(user_id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u *UserUseCase) UpdateUserDetails(user *pb.UserDetails) (pb.UserDetails, error) {
+	userdetails := model.UserModel{
+		Name:    user.Name,
+		Email:   user.Email,
+		Gender:  user.Gender,
+		Age:     user.Age,
+		Number:  user.Number,
+		Address: user.Address,
+	}
+	updateuser := u.UserRepository.UpdateUser(&userdetails)
+	if updateuser != nil {
+		return pb.UserDetails{}, fmt.Errorf("failed to update user: %w", updateuser)
+	}
+	return pb.UserDetails{
+		Name:    user.Name,
+		Email:   user.Email,
+		Gender:  user.Gender,
+		Age:     user.Age,
+		Number:  user.Number,
+		Address: user.Address,
+	}, nil
+}
+
+func (u *UserUseCase) ListUsers() ([]model.UserModel, error){
+	users, err := u.UserRepository.ListUsers()
+	if err != nil{
+		return []model.UserModel{}, err
+	}
+	return users, nil
 }

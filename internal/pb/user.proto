@@ -10,6 +10,7 @@ service user{
     rpc Login(LoginRequest)returns(LoginResponse);
     rpc IndUserDetails(idreq)returns(UserDetails);
     rpc UpdateUserDetails(UserDetails)returns(UserDetails);
+    rpc ListUsers(req)returns(listuser);
 }
 
 message SignupRequest{
@@ -47,15 +48,22 @@ message LoginResponse{
 }
 
 message idreq{
-    string id = 1;
+    uint32 id = 1;
 }
 
 message UserDetails{
     uint32 id = 1;
     string name = 2;
-    string gender = 3;
-    string age = 4;
-    string number = 5;
-    string password = 6;
-    string address = 7; 
+    string email = 3;
+    string gender = 4;
+    string age = 5;
+    string number = 6;
+    string password = 7;
+    string address = 8; 
+}
+
+message req{}
+
+message listuser{
+    repeated UserDetails user=1;
 }
