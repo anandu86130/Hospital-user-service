@@ -14,22 +14,16 @@ import (
 
 func InitializeApi() (*server.Server, error) {
 	dbconn := db.ConnectDB()
-
 	userRepository := repositories.NewUserRepository(dbconn)
-
 	redisService, err := config.SetupRedis()
 	if err != nil {
 		log.Fatalf("Error when initializing Redis Client:%v", err)
 	}
-
 	userUseCase := usecase.NewUserUSeCase(userRepository, redisService)
-
 	userServiceServer := service.NewUserServer(userUseCase)
 	grpcServer, err := server.NewGRPCServer(userServiceServer)
-
 	if err != nil {
 		return &server.Server{}, errors.New("error")
 	}
-
 	return grpcServer, nil
 }
